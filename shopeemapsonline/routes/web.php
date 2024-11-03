@@ -73,3 +73,12 @@ Route::post('/pengguna', [UserController::class, 'store'])->name('pengguna.store
 Route::get('/pengguna/{id}/edit', [UserController::class, 'edit'])->name('pengguna.edit');
 Route::put('/pengguna/{id}', [UserController::class, 'update'])->name('pengguna.update');
 Route::delete('/pengguna/{id}', [UserController ::class, 'destroy'])->name('pengguna.destroy');
+
+Route::post('/payment/callback', [RegisterController::class, 'paymentCallback'])->name('payment.callback');
+Route::post('/payment/token', [RegisterController::class, 'getPaymentToken'])->name('payment.token');
+
+// Route untuk notifikasi dari Midtrans
+Route::post('/payment/notification', [RegisterController::class, 'notificationHandler'])->name('payment.notification');
+
+// Route untuk handle success payment dari frontend
+Route::post('/payment/success', [RegisterController::class, 'handlePaymentSuccess'])->name('payment.success');
