@@ -14,7 +14,7 @@
             </div>
         @endif
 
-        <form action="{{ route('users.store') }}" method="POST">
+        <form action="{{ route('pengguna.store') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="no_telp">Nomor Telepon</label>
@@ -36,7 +36,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('users.index') }}" class="btn btn-secondary">Batal</a>
+            <a href="{{ route('pengguna.index') }}" class="btn btn-secondary">Batal</a>
         </form>
     </div>
 @endsection

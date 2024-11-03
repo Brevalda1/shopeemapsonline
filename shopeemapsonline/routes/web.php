@@ -67,23 +67,9 @@ Route::post('/pins', [PinController::class, 'store'])->name('pins.store');
 Route::delete('/pins/{pin}', [PinController::class, 'destroy'])->name('pins.destroy');
 
 
-
-// Route untuk menampilkan semua pengguna
-Route::get('/usersindex', [UserController::class, 'index'])->name('users.index');
-
-// Route untuk menampilkan form tambah pengguna
-Route::get('/userscreate', [UserController::class, 'create'])->name('users.create');
-
-// Route untuk menyimpan data pengguna baru
-Route::post('/usersstore', [UserController::class, 'store'])->name('users.store');
-
-// Route untuk menampilkan form edit pengguna
-Route::get('/usersedit/{id}', [UserController::class, 'edit'])->name('users.edit');
-
-// Route untuk memperbarui data pengguna
-Route::put('/usersupdate/{id}', [UserController::class, 'update'])->name('users.update');
-
-// Route untuk menghapus data pengguna
-Route::delete('/usersdelete/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-
-
+Route::get('/pengguna', [UserController::class, 'index'])->name('pengguna.index');
+Route::get('/pengguna/create', [UserController::class, 'create'])->name('pengguna.create');
+Route::post('/pengguna', [UserController::class, 'store'])->name('pengguna.store');
+Route::get('/pengguna/{id}/edit', [UserController::class, 'edit'])->name('pengguna.edit');
+Route::put('/pengguna/{id}', [UserController::class, 'update'])->name('pengguna.update');
+Route::delete('/pengguna/{id}', [UserController ::class, 'destroy'])->name('pengguna.destroy');

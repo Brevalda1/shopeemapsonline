@@ -14,7 +14,7 @@
             </div>
         @endif
 
-        <form action="{{ route('pengguna.update', $pengguna->id) }}" method="POST">
+        <form action="{{ route('pengguna.update', $pengguna->no_telp) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="form-group">
@@ -29,7 +29,7 @@
                 <label for="role">Role</label>
                 <select name="role" class="form-control" required>
                     <option value="admin" {{ $pengguna->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="user" {{ $pengguna->role == 'user' ? 'selected' : '' }}>User</option>
+                    <option value="pengguna" {{ $pengguna->role == 'pengguna' ? 'selected' : '' }}>pengguna</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Perbarui</button>

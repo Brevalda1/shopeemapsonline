@@ -8,7 +8,7 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Tambah Pengguna</a>
+        <a href="{{ route('pengguna.create') }}" class="btn btn-primary mb-3">Tambah Pengguna</a>
 
         <table class="table table-bordered">
             <thead>
@@ -21,20 +21,19 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($penggunas as $pengguna)
+                @foreach($penggunas as $index => $pengguna)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $index + 1 }}</td>
                         <td>{{ $pengguna->no_telp }}</td>
                         <td>{{ $pengguna->nama }}</td>
                         <td>{{ $pengguna->role }}</td>
                         <td>
-                            {{-- <a href="{{ route('user.edit', $pengguna->id) }}" class="btn btn-warning btn-sm">Edit</a> --}}
-
-                            {{-- <form action="{{ route('users.destroy', $pengguna->id) }}" method="POST" style="display:inline;">
+                            <a href="{{ route('pengguna.edit', $pengguna->no_telp) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ route('pengguna.destroy', $pengguna->no_telp) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus pengguna ini?')">Hapus</button>
-                            </form> --}}
+                            </form>
                         </td>
                     </tr>
                 @endforeach
