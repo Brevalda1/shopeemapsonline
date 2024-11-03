@@ -14,6 +14,10 @@
         <div class="container">
             <a class="navbar-brand" href="#">Dashboard</a>
             <div class="ms-auto">
+                <form action="/" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-danger">Logout</button>
@@ -28,7 +32,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Welcome!</h5>
-                        <p class="card-text">You're logged in!</p>
+                        <p class="card-text">
+                            Welcome, {{ session('nama') ?? 'Guest' }}!
+                        </p>
                     </div>
                 </div>
 

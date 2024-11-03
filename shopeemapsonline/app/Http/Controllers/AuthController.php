@@ -31,13 +31,18 @@ class AuthController extends Controller
             $request->session()->regenerate();
             
             $user = Auth::user();
-            // Simpan data user ke session
+            // Simpan data user ke session dengan waktu aktivitas terakhir
             session([
                 'user_id' => $user->id,
                 'username' => $user->username,
+                'nama' => $user->nama,  // Tambahkan nama ke session
                 'role' => $user->role,
-                'email' => $user->email
+                'email' => $user->email,
+                'last_activity' => time() // Tambahkan waktu aktivitas terakhir
             ]);
+
+            // Set session lifetime ke 1 jam
+            config(['session.lifetime' => 60]);
 
             if ($user->role === 'admin') {
                 return redirect("/dashboardadmin")->with('success', 'Selamat datang Admin!');

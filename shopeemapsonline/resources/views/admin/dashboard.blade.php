@@ -13,10 +13,13 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">Dashboard</a>
-            <div class="ms-auto">
-                <form action="{{ route('logout') }}" method="POST">
+            <div class="ms-auto d-flex">
+                <form action="{{ route('logout') }}" method="POST" class="me-2">
                     @csrf
                     <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+                <form action="{{ route('users.index') }}" method="GET">
+                    <button type="submit" class="btn btn-primary">lihat users</button>
                 </form>
             </div>
         </div>

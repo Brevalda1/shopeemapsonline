@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PinController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,5 +65,25 @@ Route::delete('/pins/{id}', [PinController::class, 'destroy'])->name('pins.destr
 Route::get('/pins', [PinController::class, 'index'])->name('pins.index');
 Route::post('/pins', [PinController::class, 'store'])->name('pins.store');
 Route::delete('/pins/{pin}', [PinController::class, 'destroy'])->name('pins.destroy');
+
+
+
+// Route untuk menampilkan semua pengguna
+Route::get('/usersindex', [UserController::class, 'index'])->name('users.index');
+
+// Route untuk menampilkan form tambah pengguna
+Route::get('/userscreate', [UserController::class, 'create'])->name('users.create');
+
+// Route untuk menyimpan data pengguna baru
+Route::post('/usersstore', [UserController::class, 'store'])->name('users.store');
+
+// Route untuk menampilkan form edit pengguna
+Route::get('/usersedit/{id}', [UserController::class, 'edit'])->name('users.edit');
+
+// Route untuk memperbarui data pengguna
+Route::put('/usersupdate/{id}', [UserController::class, 'update'])->name('users.update');
+
+// Route untuk menghapus data pengguna
+Route::delete('/usersdelete/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
 

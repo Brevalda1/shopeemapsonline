@@ -2,23 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
-class Pengguna extends Authenticatable
+class Pengguna extends Model
 {
     protected $table = 'pengguna';
 
     protected $fillable = [
         'no_telp',
-        'password',
         'nama',
+        'password',
         'role'
     ];
 
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password'
     ];
-
-    protected $primaryKey = 'id_pengguna';
 }
