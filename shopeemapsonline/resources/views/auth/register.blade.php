@@ -46,7 +46,7 @@
 
                             <div class="mb-3">
                                 <div class="alert alert-info">
-                                    <h5 class="mb-2">Biaya Registrasi: Rp 100.000</h5>
+                                    <h5 class="mb-2">Biaya Registrasi: Rp 10.000</h5>
                                     <p class="mb-0">Silakan lakukan pembayaran untuk menyelesaikan registrasi</p>
                                 </div>
                             </div>
