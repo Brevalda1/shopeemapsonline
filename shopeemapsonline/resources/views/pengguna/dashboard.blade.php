@@ -14,10 +14,6 @@
         <div class="container">
             <a class="navbar-brand" href="#">Dashboard</a>
             <div class="ms-auto">
-                <form action="/" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Logout</button>
-                </form>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-danger">Logout</button>
@@ -77,6 +73,16 @@
             shadowSize: [41, 41]
         });
 
+        // Tambahkan custom icon baru untuk elmafioso (misalnya warna hijau)
+        const elMafiosoIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
         // Initialize the readonly map
         readonlyMap = L.map('readonlyMap', {
             center: [-6.200000, 106.816666],
@@ -95,9 +101,16 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(readonlyMap);
 
-        // Update fungsi addMarker untuk menggunakan pinIcon
+        // Update fungsi addMarker untuk mengecek kata kunci elmafioso
         function addMarker(lat, lng, popupText = "Location") {
-            const readonlyMarker = L.marker([lat, lng], {icon: pinIcon}).addTo(readonlyMap);
+            // Pilih icon berdasarkan deskripsi
+            let selectedIcon = pinIcon; // default blue icon
+            
+            if (popupText.toLowerCase().includes('elmafioso')) {
+                selectedIcon = elMafiosoIcon; // green icon untuk elmafioso
+            }
+
+            const readonlyMarker = L.marker([lat, lng], {icon: selectedIcon}).addTo(readonlyMap);
             const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
             const popupContent = `
                 <div>
@@ -119,7 +132,7 @@
                         const lng = position.coords.longitude;
 
                         L.marker([lat, lng], {icon: userIcon}).addTo(readonlyMap)
-                            .bindPopup("Your location")
+                            .bindPopup("Lokasi Anda")
                             .openPopup();
 
                         readonlyMap.setView([lat, lng], 13);

@@ -19,7 +19,7 @@
             @method('PUT')
             <div class="form-group">
                 <label for="no_telp">Nomor Telepon</label>
-                <input type="text" name="no_telp" class="form-control" value="{{ $pengguna->no_telp }}" required>
+                <input type="text" name="no_telp" class="form-control" value="{{ $pengguna->no_telp }}" required readonly>
             </div>
             <div class="form-group">
                 <label for="nama">Nama</label>

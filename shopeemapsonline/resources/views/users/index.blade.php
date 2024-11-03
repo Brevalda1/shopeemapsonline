@@ -17,6 +17,7 @@
                     <th>Nomor Telepon</th>
                     <th>Nama</th>
                     <th>Role</th>
+                    <th>tanggal expired</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -27,6 +28,7 @@
                         <td>{{ $pengguna->no_telp }}</td>
                         <td>{{ $pengguna->nama }}</td>
                         <td>{{ $pengguna->role }}</td>
+                        <td>{{ $pengguna->tanggal_exp }}</td>
                         <td>
                             <a href="{{ route('pengguna.edit', $pengguna->no_telp) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form action="{{ route('pengguna.destroy', $pengguna->no_telp) }}" method="POST" style="display:inline;">

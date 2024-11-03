@@ -18,7 +18,7 @@
                     @csrf
                     <button type="submit" class="btn btn-danger">Logout</button>
                 </form>
-                <form action="{{ route('users.index') }}" method="GET">
+                <form action="{{ route('pengguna.index') }}" method="GET">
                     <button type="submit" class="btn btn-primary">lihat users</button>
                 </form>
             </div>

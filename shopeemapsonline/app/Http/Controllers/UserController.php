@@ -29,7 +29,8 @@ class UserController extends Controller
             'no_telp' => 'required|unique:pengguna',
             'nama' => 'required',
             'password' => 'required|min:6',
-            'role' => 'required'
+            'role' => 'required',
+            'tanggal_exp' => 'required|date|after:today'
         ]);
 
         DB::table('pengguna')->insert([
@@ -37,9 +38,10 @@ class UserController extends Controller
             'nama' => $request->nama,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'tanggal_exp' => $request->tanggal_exp
         ]);
 
-        return redirect('/pengguna')->with('success', 'Pengguna berhasil diperbarui');
+        return redirect('/pengguna')->with('success', 'Pengguna berhasil ditambahkan');
     }
 
     // Menampilkan form untuk mengedit pengguna
@@ -51,23 +53,25 @@ class UserController extends Controller
 
     // Memperbarui data pengguna
     public function update(Request $request, $no_telp)
-{
-    $request->validate([
-        'no_telp' => 'required|unique:pengguna,no_telp,'.$no_telp.',no_telp',
-        'nama' => 'required',
-        'role' => 'required'
-    ]);
-
-    DB::table('pengguna')
-        ->where('no_telp', $no_telp)
-        ->update([
-            'no_telp' => $request->no_telp,
-            'nama' => $request->nama,
-            'role' => $request->role,
+    {
+        $request->validate([
+            'no_telp' => 'required|unique:pengguna,no_telp,'.$no_telp.',no_telp',
+            'nama' => 'required',
+            'role' => 'required',
+            'tanggal_exp' => 'required|date'
         ]);
 
+        DB::table('pengguna')
+            ->where('no_telp', $no_telp)
+            ->update([
+                'no_telp' => $request->no_telp,
+                'nama' => $request->nama,
+                'role' => $request->role,
+                'tanggal_exp' => $request->tanggal_exp
+            ]);
+
         return redirect('/pengguna')->with('success', 'Pengguna berhasil diperbarui');
-}
+    }
 
     // Menghapus data pengguna
     public function destroy($no_telp)

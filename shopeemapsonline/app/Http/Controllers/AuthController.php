@@ -28,17 +28,26 @@ class AuthController extends Controller
         ];
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            
+            // Cek tanggal expired
+            if ($user->tanggal_exp && now()->startOfDay()->gt($user->tanggal_exp)) {
+                Auth::logout();
+                return back()->withErrors([
+                    'no_telp' => 'Akun Anda telah kadaluarsa. Silakan hubungi admin.'
+                ]);
+            }
+
             $request->session()->regenerate();
             
-            $user = Auth::user();
             // Simpan data user ke session dengan waktu aktivitas terakhir
             session([
                 'user_id' => $user->id,
                 'username' => $user->username,
-                'nama' => $user->nama,  // Tambahkan nama ke session
+                'nama' => $user->nama,
                 'role' => $user->role,
                 'email' => $user->email,
-                'last_activity' => time() // Tambahkan waktu aktivitas terakhir
+                'last_activity' => time()
             ]);
 
             // Set session lifetime ke 1 jam
