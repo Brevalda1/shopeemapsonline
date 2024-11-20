@@ -44,9 +44,11 @@ class AuthController extends Controller
             session([
                 'user_id' => $user->id,
                 'username' => $user->username,
+                'no_telp' => $user->no_telp,
                 'nama' => $user->nama,
                 'role' => $user->role,
                 'email' => $user->email,
+                'tanggal_exp' => $user->tanggal_exp,
                 'last_activity' => time()
             ]);
 

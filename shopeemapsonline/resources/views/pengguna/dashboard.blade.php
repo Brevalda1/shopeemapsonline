@@ -93,10 +93,27 @@
                     <div class="card-body">
                         <h5 class="card-title">Welcome!</h5>
                         <p class="card-text">
-                            Welcome, {{ session('nama') ?? 'Guest' }}!
+                            Welcome, {{ session('nama') ?? 'Guest' }}!    Welcome, {{ session('tanggal_exp') ?? 'Guest' }}!
                         </p>
                     </div>
                 </div>
+                <!-- Tambahkan ini di card Welcome -->
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="card-title">Welcome!</h5>
+                <p class="card-text">
+                    Welcome, {{ session('nama') ?? 'Guest' }}!<br>
+                    Masa berlaku sampai: {{ \Carbon\Carbon::parse(session('tanggal_exp'))->format('d F Y') }}
+                </p>
+            </div>
+            <button type="button" id="extend-button" class="btn btn-success">
+                <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
+            </button>
+        </div>
+    </div>
+</div>
 
                 <!-- Readonly Map -->
                 <div class="card mt-4">
@@ -440,5 +457,86 @@
         loadPins();
         getUserLocation();
     </script>
+    
+<!-- Tambahkan script ini di bagian bawah sebelum </body> -->
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+document.getElementById('extend-button').onclick = function() {
+    // Tampilkan loading
+    const extendButton = this;
+    extendButton.disabled = true;
+    extendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+    // Kirim request untuk mendapatkan token
+    fetch('{{ route("membership.payment.token") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            resetButton();
+            return;
+        }
+
+        snap.pay(data.snap_token, {
+            onSuccess: function(result) {
+                handlePaymentSuccess(result);
+            },
+            onPending: function(result) {
+                alert('Pembayaran pending, silakan selesaikan pembayaran');
+                resetButton();
+            },
+            onError: function(result) {
+                alert('Pembayaran gagal');
+                resetButton();
+            },
+            onClose: function() {
+                resetButton();
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat memproses pembayaran');
+        resetButton();
+    });
+
+    function resetButton() {
+        extendButton.disabled = false;
+        extendButton.innerHTML = '<i class="fas fa-credit-card me-2"></i>Perpanjang Membership';
+    }
+
+    function handlePaymentSuccess(result) {
+        fetch('{{ route("membership.payment.success") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(result)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Pembayaran berhasil! Membership Anda telah diperpanjang.');
+                window.location.reload();
+            } else {
+                alert(data.message || 'Terjadi kesalahan');
+                resetButton();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat memproses pembayaran');
+            resetButton();
+        });
+    }
+};
+</script>
     </body>
     </html>

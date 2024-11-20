@@ -8,6 +8,7 @@ use App\Http\Controllers\PinController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MembershipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,3 +84,11 @@ Route::post('/payment/notification', [RegisterController::class, 'notificationHa
 
 // Route untuk handle success payment dari frontend
 Route::post('/payment/success', [RegisterController::class, 'handlePaymentSuccess'])->name('payment.success');
+
+// Membership payment routes
+Route::post('/membership/payment/token', [MembershipController::class, 'getPaymentToken'])
+    ->name('membership.payment.token');
+Route::post('/membership/payment/success', [MembershipController::class, 'handlePaymentSuccess'])
+    ->name('membership.payment.success');
+Route::post('/membership/payment/notification', [MembershipController::class, 'notificationHandler'])
+    ->name('membership.payment.notification');
