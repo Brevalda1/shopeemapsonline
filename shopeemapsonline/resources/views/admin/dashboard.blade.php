@@ -525,5 +525,210 @@
             alert("Terjadi kesalahan saat memuat peta. Silakan refresh halaman.");
         }
     </script>
+    <script>
+        // Add click event for placing pins
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+    
+            // Show temporary marker before confirmation
+            const tempMarker = L.marker([lat, lng], {
+                icon: pinIcon,
+                opacity: 0.6
+            }).addTo(map);
+    
+            var popupText = prompt("Masukkan deskripsi lokasi:");
+            if (popupText) {
+                map.removeLayer(tempMarker);
+                savePinToDatabase(lat, lng, popupText);
+            } else {
+                map.removeLayer(tempMarker);
+            }
+        });
+    
+        // Save pin to database
+        function savePinToDatabase(lat, lng, description) {
+            fetch("{{ route('pins.store') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    latitude: lat,
+                    longitude: lng,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMarker(data.latitude, data.longitude, data.description, data.id);
+            })
+            .catch(error => {
+                console.error("Error saving pin:", error);
+            });
+        }
+    
+        // Process Google Maps link
+        function processGmapsLink() {
+            const link = document.getElementById('gmapsLink').value.trim();
+            
+            function extractCoordinates(url) {
+                try {
+                    // Format 1: maps.app.goo.gl
+                    if (url.includes('@')) {
+                        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                        if (match) {
+                            return {
+                                lat: parseFloat(match[1]),
+                                lng: parseFloat(match[2])
+                            };
+                        }
+                    }
+                    
+                    // Format 2: Koordinat langsung
+                    const coordMatch = url.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+                    if (coordMatch) {
+                        return {
+                            lat: parseFloat(coordMatch[1]),
+                            lng: parseFloat(coordMatch[2])
+                        };
+                    }
+                    
+                    return null;
+                } catch (error) {
+                    console.error("Error extracting coordinates:", error);
+                    return null;
+                }
+            }
+    
+            const coordinates = extractCoordinates(link);
+            
+            if (coordinates && !isNaN(coordinates.lat) && !isNaN(coordinates.lng)) {
+                const description = prompt("Masukkan deskripsi lokasi:");
+                if (description) {
+                    savePinToDatabase(coordinates.lat, coordinates.lng, description);
+                    map.setView([coordinates.lat, coordinates.lng], 15);
+                    document.getElementById('gmapsLink').value = ''; // Clear input
+                }
+            } else {
+                alert("Format link Google Maps tidak valid. Pastikan link yang dimasukkan benar.");
+            }
+        }
+    </script>
+    <script>
+        // Delete pin with confirmation
+        function deletePin(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus lokasi ini?")) {
+                fetch(`/pins/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove markers from both maps
+                        const markerData = markers.get(id);
+                        if (markerData) {
+                            map.removeLayer(markerData.marker);
+                            readonlyMap.removeLayer(markerData.readonlyMarker);
+                            markers.delete(id);
+        
+                            // Remove from allMarkers array
+                            const index = allMarkers.findIndex(m => m.id === id);
+                            if (index > -1) {
+                                allMarkers.splice(index, 1);
+                            }
+        
+                            // Update counters
+                            updateFilterCounters();
+        
+                            // Show success message
+                            alert("Lokasi berhasil dihapus!");
+                        }
+                    } else {
+                        alert("Gagal menghapus lokasi: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting pin:", error);
+                    alert("Gagal menghapus lokasi. Silakan coba lagi.");
+                });
+            }
+        }
+        
+        // Update addMarker function to include proper delete button
+        function addMarker(lat, lng, popupText = "Location", id = null) {
+            let selectedIcon = pinIcon;
+            let category = 'lainnya';
+            
+            const lowerText = popupText.toLowerCase();
+            if (lowerText.includes('sembako')) {
+                selectedIcon = sembakoIcon;
+                category = 'sembako';
+            } else if (lowerText.includes('orderantinggi')) {
+                selectedIcon = orderanTinggiIcon;
+                category = 'orderantinggi';
+            }
+        
+            const marker = L.marker([lat, lng], {icon: selectedIcon});
+            const readonlyMarker = L.marker([lat, lng], {icon: selectedIcon});
+        
+            const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+            const popupContent = `
+                <div>
+                    ${popupText}
+                    <br>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="${googleMapsUrl}" target="_blank" class="btn btn-sm btn-primary text-white">
+                            Navigasi ke Lokasi
+                        </a>
+                        ${id ? `
+                            <button class="btn btn-warning btn-sm" onclick="editPin(${id}, '${popupText.replace(/'/g, "\\'")}')">
+                                Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deletePin(${id})">
+                                Delete
+                            </button>
+                        ` : ""}
+                    </div>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+        
+            const readonlyPopupContent = `
+                <div>
+                    ${popupText}<br>
+                    <a href="${googleMapsUrl}" target="_blank" class="btn btn-sm btn-primary mt-2 text-white">
+                        Navigasi ke Lokasi
+                    </a>
+                </div>
+            `;
+            readonlyMarker.bindPopup(readonlyPopupContent);
+        
+            if (id) {
+                markers.set(id, { marker, readonlyMarker });
+                allMarkers.push({
+                    id: id,
+                    category: category,
+                    coordinates: [lat, lng],
+                    description: popupText
+                });
+            }
+        
+            if (currentFilter === 'semua' || 
+                currentFilter === category || 
+                (currentFilter === 'lainnya' && category === 'lainnya')) {
+                marker.addTo(map);
+                readonlyMarker.addTo(readonlyMap);
+            }
+        
+            updateFilterCounters();
+            return marker;
+        }
+        </script>
     </body>
     </html>
