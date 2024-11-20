@@ -22,6 +22,26 @@ class PinController extends Controller
 
         return response()->json($pin);
     }
+    public function update(Request $request, $id)
+    {
+        try {
+            $pin = Pin::findOrFail($id);
+            $pin->update([
+                'description' => $request->description
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Pin berhasil diupdate',
+                'data' => $pin
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate pin: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function destroy($id)
     {

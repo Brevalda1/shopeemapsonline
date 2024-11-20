@@ -36,6 +36,7 @@ Route::get('/dashboardadmin', [App\Http\Controllers\DashboardController::class, 
 
 Route::post('/pins', [App\Http\Controllers\PinController::class, 'store'])->name('pins.store');
 Route::delete('/pins/{id}', [App\Http\Controllers\PinController::class, 'destroy'])->name('pins.destroy');
+Route::put('/pins/{id}', [App\Http\Controllers\PinController::class, 'update'])->name('pins.update');
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
 Route::post('/logout', function () {

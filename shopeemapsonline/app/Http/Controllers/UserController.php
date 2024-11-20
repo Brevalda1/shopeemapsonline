@@ -60,7 +60,8 @@ class UserController extends Controller
             'role' => 'required',
             'tanggal_exp' => 'required|date'
         ]);
-
+    
+        // Update data pengguna
         DB::table('pengguna')
             ->where('no_telp', $no_telp)
             ->update([
@@ -69,7 +70,7 @@ class UserController extends Controller
                 'role' => $request->role,
                 'tanggal_exp' => $request->tanggal_exp
             ]);
-
+    
         return redirect('/pengguna')->with('success', 'Pengguna berhasil diperbarui');
     }
 
