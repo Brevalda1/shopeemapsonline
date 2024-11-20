@@ -76,15 +76,18 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Dashboard</a>
-            <div class="ms-auto">
+            <a class="navbar-brand" href="#">Shopee SPX Maps</a>
+            <div class="ms-auto d-flex align-items-center">
+                <button type="button" id="extend-button" class="btn btn-success me-2">
+                    <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
+                </button>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-danger">Logout</button>
                 </form>
             </div>
         </div>
-    </nav>
+     </nav>
 
     <div class="container py-4">
         <div class="row">
@@ -93,12 +96,12 @@
                     <div class="card-body">
                         <h5 class="card-title">Welcome!</h5>
                         <p class="card-text">
-                            Welcome, {{ session('nama') ?? 'Guest' }}!    Welcome, {{ session('tanggal_exp') ?? 'Guest' }}!
+                            Welcome, {{ session('nama') ?? 'Guest' }}!   Masa berlaku sampai: {{ \Carbon\Carbon::parse(session('tanggal_exp'))->format('d F Y') }}
                         </p>
                     </div>
                 </div>
                 <!-- Tambahkan ini di card Welcome -->
-<div class="card">
+{{-- <div class="card">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -113,7 +116,7 @@
             </button>
         </div>
     </div>
-</div>
+</div> --}}
 
                 <!-- Readonly Map -->
                 <div class="card mt-4">
@@ -523,7 +526,7 @@ document.getElementById('extend-button').onclick = function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Pembayaran berhasil! Membership Anda telah diperpanjang.');
+                alert('Pembayaran berhasil! Membership Anda telah diperpanjang. silahkan logout lalu login kembali');
                 window.location.reload();
             } else {
                 alert(data.message || 'Terjadi kesalahan');

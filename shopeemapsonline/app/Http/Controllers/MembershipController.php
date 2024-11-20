@@ -39,7 +39,7 @@ class MembershipController extends Controller
         $orderId = 'MEMBER-' . time();
         
         // Set jumlah pembayaran
-        $amount = 50000;
+        $amount = 10000;
 
         $transactionData = [
             'transaction_details' => [
