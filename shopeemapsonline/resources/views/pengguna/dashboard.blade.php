@@ -72,23 +72,71 @@
             }
         }
     </style>
+  <style>
+    .navbar {
+        padding: 0.8rem 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    
+    .navbar-toggler {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+    
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    
+    .btn {
+        font-weight: 500;
+        padding: 0.375rem 1rem;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        transition: all 0.2s;
+    }
+    
+    @media (max-width: 991px) {
+        .navbar-collapse {
+            padding-bottom: 0.5rem;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
-            <a class="navbar-brand" href="#">Shopee SPX Maps</a>
-            <div class="ms-auto d-flex align-items-center">
-                <button type="button" id="extend-button" class="btn btn-success me-2">
-                    <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
-                </button>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Logout</button>
-                </form>
+            <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
+                Shopee SPX Maps
+            </a>
+            
+            <!-- Hamburger Button -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarButtons" aria-controls="navbarButtons" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+    
+            <!-- Collapsible Content -->
+            <div class="collapse navbar-collapse" id="navbarButtons">
+                <div class="ms-auto d-flex flex-column flex-lg-row gap-2 mt-2 mt-lg-0">
+                    <button type="button" id="extend-button" class="btn btn-light">
+                        <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
+                    </button>
+                    <form action="{{ route('logout') }}" method="POST" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn w-100" style="background-color: rgba(255,255,255,0.9); color: #EE4D2D;">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
-     </nav>
-
+    </nav>
     <div class="container py-4">
         <div class="row">
             <div class="col-12">
