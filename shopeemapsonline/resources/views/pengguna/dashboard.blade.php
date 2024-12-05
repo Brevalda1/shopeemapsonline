@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Previous head content remains the same until the scripts section -->
-<!-- Only showing the modified parts for brevity -->
+<!-- Previous head content remains exactly the same until the scripts section -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +12,7 @@
     <!-- Fullscreen CSS -->
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
     <style>
-        /* Previous styles remain the same */
+        /* All previous styles remain exactly the same */
         .custom-div-icon {
             background: transparent;
             border: none;
@@ -112,7 +111,7 @@
     </style>
 </head>
 <body>
-    <!-- Previous HTML content remains exactly the same until the scripts section -->
+    <!-- All previous HTML content remains exactly the same until the scripts section -->
     <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
             <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
@@ -190,7 +189,57 @@
         let watchId = null; // For storing the geolocation watch ID
         let userLocationMarker = null;
         let userPulsingMarker = null;
+        let proximityLines = []; // Array to store proximity lines
     
+        // Function to calculate distance between two points in kilometers
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Function to update proximity lines
+        function updateProximityLines(userLat, userLng) {
+            // Remove existing lines
+            proximityLines.forEach(line => readonlyMap.removeLayer(line));
+            proximityLines = [];
+
+            // Check each marker for proximity
+            allMarkers.forEach(item => {
+                if (item.marker && item.coordinates) {
+                    const distance = calculateDistance(
+                        userLat, 
+                        userLng, 
+                        item.coordinates[0], 
+                        item.coordinates[1]
+                    );
+
+                    // If within 2km, draw a line
+                    if (distance <= 2) {
+                        const line = L.polyline(
+                            [
+                                [userLat, userLng],
+                                item.coordinates
+                            ],
+                            {
+                                color: '#EE4D2D',
+                                weight: 2,
+                                opacity: 0.7,
+                                dashArray: '5, 10'
+                            }
+                        ).addTo(readonlyMap);
+
+                        proximityLines.push(line);
+                    }
+                }
+            });
+        }
+
         // Custom user location icon (enhanced)
         const userIcon = L.divIcon({
             html: `
@@ -352,6 +401,9 @@
                 icon: pulsingDot,
                 zIndexOffset: 999
             }).addTo(readonlyMap);
+
+            // Update proximity lines
+            updateProximityLines(lat, lng);
         }
 
         // Function to handle location tracking errors
@@ -410,6 +462,11 @@
     
             // Update counter di tombol filter
             updateFilterCounters();
+
+            // Update proximity lines if user location is available
+            if (userLatLng) {
+                updateProximityLines(userLatLng[0], userLatLng[1]);
+            }
         }
     
         // Fungsi untuk update counter di tombol filter
@@ -478,6 +535,11 @@
     
             // Update counter
             updateFilterCounters();
+
+            // Update proximity lines if user location is available
+            if (userLatLng) {
+                updateProximityLines(userLatLng[0], userLatLng[1]);
+            }
         }
     
         // Load pins from database
@@ -490,6 +552,10 @@
                         addMarker(pin.latitude, pin.longitude, pin.description);
                     });
                     updateFilterCounters(); // Update counters setelah load
+                    // Update proximity lines if user location is available
+                    if (userLatLng) {
+                        updateProximityLines(userLatLng[0], userLatLng[1]);
+                    }
                 })
                 .catch(error => {
                     console.error("Error loading pins:", error);
