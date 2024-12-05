@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Previous head content remains exactly the same until the scripts section -->
+<!-- Previous head content remains exactly the same until the script section -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#EE4D2D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="SPX Maps">
+    <link rel="manifest" href="/manifest.json">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Leaflet CSS -->
@@ -99,6 +105,18 @@
             transition: all 0.2s;
         }
         
+        #installButton {
+            display: none;
+            margin-right: 10px;
+            background-color: white;
+            color: #EE4D2D;
+            border: 2px solid white;
+        }
+        
+        #installButton:hover {
+            background-color: rgba(255,255,255,0.9);
+        }
+        
         @media (max-width: 991px) {
             .navbar-collapse {
                 padding-bottom: 0.5rem;
@@ -111,7 +129,7 @@
     </style>
 </head>
 <body>
-    <!-- All previous HTML content remains exactly the same until the scripts section -->
+    <!-- Previous navbar and content structure remains exactly the same -->
     <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
             <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
@@ -126,6 +144,10 @@
             <!-- Collapsible Content -->
             <div class="collapse navbar-collapse" id="navbarButtons">
                 <div class="ms-auto d-flex flex-column flex-lg-row gap-2 mt-2 mt-lg-0">
+                    <!-- Install Button -->
+                    <button type="button" id="installButton" class="btn">
+                        <i class="fas fa-download me-2"></i>Install App
+                    </button>
                     <button type="button" id="extend-button" class="btn btn-light">
                         <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
                     </button>
@@ -137,6 +159,7 @@
             </div>
         </div>
     </nav>
+
     <div class="container py-4">
         <div class="row">
             <div class="col-12">
@@ -175,25 +198,71 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Previous scripts remain the same -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <!-- Fullscreen Plugin -->
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    
+    <!-- PWA Installation Script remains exactly the same -->
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the installation');
+                } else {
+                    console.log('User dismissed the installation');
+                }
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+        });
+    </script>
+
+    <!-- Map initialization script with modifications -->
     <script>
         let readonlyMap;
         let userLatLng = null;
-        let allMarkers = []; // Array untuk menyimpan semua marker
-        let currentFilter = 'semua'; // Filter default
-        let watchId = null; // For storing the geolocation watch ID
+        let allMarkers = [];
+        let currentFilter = 'semua';
+        let watchId = null;
         let userLocationMarker = null;
         let userPulsingMarker = null;
-        let proximityLines = []; // Array to store proximity lines
-    
-        // Function to calculate distance between two points in kilometers
+        let proximityLines = [];
+        let isFirstLocation = true;
+
+        // All previous functions remain exactly the same
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Earth's radius in kilometers
+            const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -203,13 +272,10 @@
             return R * c;
         }
 
-        // Function to update proximity lines
         function updateProximityLines(userLat, userLng) {
-            // Remove existing lines
             proximityLines.forEach(line => readonlyMap.removeLayer(line));
             proximityLines = [];
 
-            // Check each marker for proximity
             allMarkers.forEach(item => {
                 if (item.marker && item.coordinates) {
                     const distance = calculateDistance(
@@ -219,7 +285,6 @@
                         item.coordinates[1]
                     );
 
-                    // If within 2km, draw a line
                     if (distance <= 2) {
                         const line = L.polyline(
                             [
@@ -240,7 +305,6 @@
             });
         }
 
-        // Custom user location icon (enhanced)
         const userIcon = L.divIcon({
             html: `
                 <div style="
@@ -271,8 +335,7 @@
             iconAnchor: [12, 12],
             popupAnchor: [0, -12]
         });
-    
-        // Custom icons untuk marker lain
+
         const pinIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -281,7 +344,7 @@
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
-    
+
         const sembakoIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -290,7 +353,7 @@
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
-    
+
         const orderanTinggiIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -299,13 +362,12 @@
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
-    
-        // Custom Locate Control
+
         L.Control.Locate = L.Control.extend({
             options: {
                 position: 'topleft'
             },
-    
+
             onAdd: function(map) {
                 const container = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar leaflet-control');
                 
@@ -318,7 +380,7 @@
                         <circle cx="12" cy="12" r="3"/>
                     </svg>
                 `;
-    
+
                 L.DomEvent.on(link, 'click', L.DomEvent.stopPropagation)
                           .on(link, 'click', L.DomEvent.preventDefault)
                           .on(link, 'click', function() {
@@ -331,12 +393,11 @@
                                   startLocationTracking();
                               }
                           });
-    
+
                 return container;
             }
         });
-    
-        // Initialize the readonly map
+
         readonlyMap = L.map('readonlyMap', {
             center: [-6.200000, 106.816666],
             zoom: 13,
@@ -348,24 +409,20 @@
             keyboard: true,
             fullscreenControl: true
         });
-    
-        // Add tile layer
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(readonlyMap);
-    
-        // Add locate control
+
         const locateControl = new L.Control.Locate();
         readonlyMap.addControl(locateControl);
 
-        // Function to update user location marker
         function updateUserLocationMarker(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             userLatLng = [lat, lng];
 
-            // Remove existing markers if they exist
             if (userLocationMarker) {
                 readonlyMap.removeLayer(userLocationMarker);
             }
@@ -373,14 +430,12 @@
                 readonlyMap.removeLayer(userPulsingMarker);
             }
 
-            // Add user location marker
             userLocationMarker = L.marker(userLatLng, {
                 icon: userIcon,
                 zIndexOffset: 1000
             }).addTo(readonlyMap)
               .bindPopup("Lokasi Anda");
 
-            // Add pulsing effect
             const pulsingDot = L.divIcon({
                 html: `
                     <div style="
@@ -402,25 +457,26 @@
                 zIndexOffset: 999
             }).addTo(readonlyMap);
 
-            // Update proximity lines
+            // Center map on first location update
+            if (isFirstLocation) {
+                readonlyMap.setView(userLatLng, 15);
+                isFirstLocation = false;
+            }
+
             updateProximityLines(lat, lng);
         }
 
-        // Function to handle location tracking errors
         function handleLocationError(error) {
             console.error("Error getting user location:", error);
             alert("Gagal mendapatkan lokasi: " + error.message);
         }
 
-        // Function to start location tracking
         function startLocationTracking() {
             if (navigator.geolocation) {
-                // Clear existing watch if any
                 if (watchId !== null) {
                     navigator.geolocation.clearWatch(watchId);
                 }
 
-                // Start new watch
                 watchId = navigator.geolocation.watchPosition(
                     updateUserLocationMarker,
                     handleLocationError,
@@ -435,7 +491,6 @@
             }
         }
 
-        // Clean up function
         function cleanupLocationTracking() {
             if (watchId !== null) {
                 navigator.geolocation.clearWatch(watchId);
@@ -443,10 +498,8 @@
             }
         }
 
-        // Add cleanup on page unload
         window.addEventListener('unload', cleanupLocationTracking);
-    
-        // Fungsi untuk menerapkan filter
+
         function applyFilter(filter) {
             currentFilter = filter;
             
@@ -459,17 +512,14 @@
                     readonlyMap.removeLayer(item.marker);
                 }
             });
-    
-            // Update counter di tombol filter
+
             updateFilterCounters();
 
-            // Update proximity lines if user location is available
             if (userLatLng) {
                 updateProximityLines(userLatLng[0], userLatLng[1]);
             }
         }
-    
-        // Fungsi untuk update counter di tombol filter
+
         function updateFilterCounters() {
             const counts = {
                 semua: allMarkers.length,
@@ -477,7 +527,7 @@
                 sembako: allMarkers.filter(m => m.category === 'sembako').length,
                 lainnya: allMarkers.filter(m => m.category === 'lainnya').length
             };
-    
+
             document.querySelectorAll('.btn-filter').forEach(btn => {
                 const filter = btn.dataset.filter;
                 const count = counts[filter] || 0;
@@ -489,11 +539,10 @@
                 }
             });
         }
-    
-        // Fungsi addMarker yang dimodifikasi
+
         function addMarker(lat, lng, popupText = "Location") {
-            let selectedIcon = pinIcon; // default blue icon
-            let category = 'lainnya'; // default category
+            let selectedIcon = pinIcon;
+            let category = 'lainnya';
             
             const lowerText = popupText.toLowerCase();
             if (lowerText.includes('sembako')) {
@@ -503,7 +552,7 @@
                 selectedIcon = orderanTinggiIcon;
                 category = 'orderantinggi';
             }
-    
+
             const readonlyMarker = L.marker([lat, lng], {icon: selectedIcon});
             const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
             const popupContent = `
@@ -517,42 +566,36 @@
                 </div>
             `;
             readonlyMarker.bindPopup(popupContent);
-    
-            // Tambahkan marker ke array
+
             allMarkers.push({
                 marker: readonlyMarker,
                 category: category,
                 description: popupText,
                 coordinates: [lat, lng]
             });
-    
-            // Terapkan filter saat ini
+
             if (currentFilter === 'semua' || 
                 currentFilter === category || 
                 (currentFilter === 'lainnya' && category === 'lainnya')) {
                 readonlyMarker.addTo(readonlyMap);
             }
-    
-            // Update counter
+
             updateFilterCounters();
 
-            // Update proximity lines if user location is available
             if (userLatLng) {
                 updateProximityLines(userLatLng[0], userLatLng[1]);
             }
         }
-    
-        // Load pins from database
+
         function loadPins() {
             fetch("{{ route('pins.index') }}")
                 .then(response => response.json())
                 .then(data => {
-                    allMarkers = []; // Reset markers
+                    allMarkers = [];
                     data.forEach(pin => {
                         addMarker(pin.latitude, pin.longitude, pin.description);
                     });
-                    updateFilterCounters(); // Update counters setelah load
-                    // Update proximity lines if user location is available
+                    updateFilterCounters();
                     if (userLatLng) {
                         updateProximityLines(userLatLng[0], userLatLng[1]);
                     }
@@ -561,36 +604,30 @@
                     console.error("Error loading pins:", error);
                 });
         }
-    
-        // Event listener untuk tombol filter
+
         document.querySelectorAll('.btn-filter').forEach(button => {
             button.addEventListener('click', function() {
-                // Update tampilan tombol aktif
                 document.querySelectorAll('.btn-filter').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 this.classList.add('active');
-    
-                // Terapkan filter
+
                 applyFilter(this.dataset.filter);
             });
         });
-    
-        // Initialize
+
         loadPins();
-        startLocationTracking(); // Start tracking immediately
+        startLocationTracking();
     </script>
-    
-    <!-- Midtrans script -->
+
+    <!-- Midtrans script remains exactly the same -->
     <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
     <script>
         document.getElementById('extend-button').onclick = function() {
-            // Tampilkan loading
             const extendButton = this;
             extendButton.disabled = true;
             extendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
-            // Kirim request untuk mendapatkan token
             fetch('{{ route("membership.payment.token") }}', {
                 method: 'POST',
                 headers: {
@@ -660,6 +697,6 @@
                 });
             }
         };
-    </script>
+    </script>   
 </body>
 </html>
