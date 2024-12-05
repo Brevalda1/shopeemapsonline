@@ -258,7 +258,6 @@
         let userLocationMarker = null;
         let userPulsingMarker = null;
         let proximityLines = [];
-        let isFirstLocation = true;
 
         // All previous functions remain exactly the same
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -457,11 +456,11 @@
                 zIndexOffset: 999
             }).addTo(readonlyMap);
 
-            // Center map on first location update
-            if (isFirstLocation) {
-                readonlyMap.setView(userLatLng, 15);
-                isFirstLocation = false;
-            }
+            // Always center map on user's location
+            readonlyMap.setView(userLatLng, readonlyMap.getZoom(), {
+                animate: true,
+                duration: 1
+            });
 
             updateProximityLines(lat, lng);
         }
