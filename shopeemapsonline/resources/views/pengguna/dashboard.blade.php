@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Previous head content remains the same until the scripts section -->
+<!-- Only showing the modified parts for brevity -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +13,7 @@
     <!-- Fullscreen CSS -->
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
     <style>
+        /* Previous styles remain the same */
         .custom-div-icon {
             background: transparent;
             border: none;
@@ -59,7 +62,6 @@
             box-shadow: 0 0 0 0.25rem rgba(13,110,253,.5);
             transform: translateY(1px);
         }
-        /* Responsive styling */
         @media (max-width: 768px) {
             .filter-buttons .btn {
                 width: calc(50% - 10px);
@@ -71,47 +73,46 @@
                 margin-right: 0;
             }
         }
-    </style>
-  <style>
-    .navbar {
-        padding: 0.8rem 1rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    
-    .navbar-toggler {
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .navbar-toggler:focus {
-        box-shadow: none;
-    }
-    
-    .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-    }
-    
-    .btn {
-        font-weight: 500;
-        padding: 0.375rem 1rem;
-    }
-    
-    .btn:hover {
-        transform: translateY(-1px);
-        transition: all 0.2s;
-    }
-    
-    @media (max-width: 991px) {
-        .navbar-collapse {
-            padding-bottom: 0.5rem;
+        .navbar {
+            padding: 0.8rem 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-toggler {
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
         
         .btn {
-            width: 100%;
+            font-weight: 500;
+            padding: 0.375rem 1rem;
         }
-    }
-</style>
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            transition: all 0.2s;
+        }
+        
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                padding-bottom: 0.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Previous HTML content remains exactly the same until the scripts section -->
     <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
             <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
@@ -148,23 +149,6 @@
                         </p>
                     </div>
                 </div>
-                <!-- Tambahkan ini di card Welcome -->
-{{-- <div class="card">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h5 class="card-title">Welcome!</h5>
-                <p class="card-text">
-                    Welcome, {{ session('nama') ?? 'Guest' }}!<br>
-                    Masa berlaku sampai: {{ \Carbon\Carbon::parse(session('tanggal_exp'))->format('d F Y') }}
-                </p>
-            </div>
-            <button type="button" id="extend-button" class="btn btn-success">
-                <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
-            </button>
-        </div>
-    </div>
-</div> --}}
 
                 <!-- Readonly Map -->
                 <div class="card mt-4">
@@ -203,6 +187,9 @@
         let userLatLng = null;
         let allMarkers = []; // Array untuk menyimpan semua marker
         let currentFilter = 'semua'; // Filter default
+        let watchId = null; // For storing the geolocation watch ID
+        let userLocationMarker = null;
+        let userPulsingMarker = null;
     
         // Custom user location icon (enhanced)
         const userIcon = L.divIcon({
@@ -292,7 +279,7 @@
                                       duration: 1
                                   });
                               } else {
-                                  getUserLocation();
+                                  startLocationTracking();
                               }
                           });
     
@@ -322,8 +309,91 @@
         // Add locate control
         const locateControl = new L.Control.Locate();
         readonlyMap.addControl(locateControl);
-    </script>
-    <script>
+
+        // Function to update user location marker
+        function updateUserLocationMarker(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            userLatLng = [lat, lng];
+
+            // Remove existing markers if they exist
+            if (userLocationMarker) {
+                readonlyMap.removeLayer(userLocationMarker);
+            }
+            if (userPulsingMarker) {
+                readonlyMap.removeLayer(userPulsingMarker);
+            }
+
+            // Add user location marker
+            userLocationMarker = L.marker(userLatLng, {
+                icon: userIcon,
+                zIndexOffset: 1000
+            }).addTo(readonlyMap)
+              .bindPopup("Lokasi Anda");
+
+            // Add pulsing effect
+            const pulsingDot = L.divIcon({
+                html: `
+                    <div style="
+                        animation: pulse 1.5s infinite;
+                        background-color: rgba(255, 0, 0, 0.3);
+                        border-radius: 50%;
+                        height: 40px;
+                        width: 40px;
+                        position: relative;
+                    "></div>
+                `,
+                className: 'custom-div-icon',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+
+            userPulsingMarker = L.marker(userLatLng, {
+                icon: pulsingDot,
+                zIndexOffset: 999
+            }).addTo(readonlyMap);
+        }
+
+        // Function to handle location tracking errors
+        function handleLocationError(error) {
+            console.error("Error getting user location:", error);
+            alert("Gagal mendapatkan lokasi: " + error.message);
+        }
+
+        // Function to start location tracking
+        function startLocationTracking() {
+            if (navigator.geolocation) {
+                // Clear existing watch if any
+                if (watchId !== null) {
+                    navigator.geolocation.clearWatch(watchId);
+                }
+
+                // Start new watch
+                watchId = navigator.geolocation.watchPosition(
+                    updateUserLocationMarker,
+                    handleLocationError,
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                alert("Geolocation tidak didukung oleh browser ini.");
+            }
+        }
+
+        // Clean up function
+        function cleanupLocationTracking() {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+        }
+
+        // Add cleanup on page unload
+        window.addEventListener('unload', cleanupLocationTracking);
+    
         // Fungsi untuk menerapkan filter
         function applyFilter(filter) {
             currentFilter = filter;
@@ -410,70 +480,6 @@
             updateFilterCounters();
         }
     
-        // Get user location dengan penyimpanan koordinat
-        function getUserLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        userLatLng = [lat, lng];
-    
-                        // Hapus marker user yang lama jika ada
-                        if (window.userLocationMarker) {
-                            readonlyMap.removeLayer(window.userLocationMarker);
-                        }
-                        if (window.userPulsingMarker) {
-                            readonlyMap.removeLayer(window.userPulsingMarker);
-                        }
-    
-                        // Add user location marker
-                        window.userLocationMarker = L.marker(userLatLng, {
-                            icon: userIcon,
-                            zIndexOffset: 1000
-                        }).addTo(readonlyMap)
-                            .bindPopup("Lokasi Anda")
-                            .openPopup();
-    
-                        // Add pulsing effect
-                        const pulsingDot = L.divIcon({
-                            html: `
-                                <div style="
-                                    animation: pulse 1.5s infinite;
-                                    background-color: rgba(255, 0, 0, 0.3);
-                                    border-radius: 50%;
-                                    height: 40px;
-                                    width: 40px;
-                                    position: relative;
-                                "></div>
-                            `,
-                            className: 'custom-div-icon',
-                            iconSize: [40, 40],
-                            iconAnchor: [20, 20]
-                        });
-    
-                        window.userPulsingMarker = L.marker(userLatLng, {
-                            icon: pulsingDot,
-                            zIndexOffset: 999
-                        }).addTo(readonlyMap);
-    
-                        readonlyMap.setView(userLatLng, 15);
-                    },
-                    function(error) {
-                        console.error("Error getting user location:", error);
-                        alert("Gagal mendapatkan lokasi: " + error.message);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 5000,
-                        maximumAge: 0
-                    }
-                );
-            } else {
-                alert("Geolocation tidak didukung oleh browser ini.");
-            }
-        }
-    
         // Load pins from database
         function loadPins() {
             fetch("{{ route('pins.index') }}")
@@ -506,88 +512,88 @@
     
         // Initialize
         loadPins();
-        getUserLocation();
+        startLocationTracking(); // Start tracking immediately
     </script>
     
-<!-- Tambahkan script ini di bagian bawah sebelum </body> -->
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
-<script>
-document.getElementById('extend-button').onclick = function() {
-    // Tampilkan loading
-    const extendButton = this;
-    extendButton.disabled = true;
-    extendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+    <!-- Midtrans script -->
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+    <script>
+        document.getElementById('extend-button').onclick = function() {
+            // Tampilkan loading
+            const extendButton = this;
+            extendButton.disabled = true;
+            extendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
-    // Kirim request untuk mendapatkan token
-    fetch('{{ route("membership.payment.token") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(data.error);
-            resetButton();
-            return;
-        }
+            // Kirim request untuk mendapatkan token
+            fetch('{{ route("membership.payment.token") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    resetButton();
+                    return;
+                }
 
-        snap.pay(data.snap_token, {
-            onSuccess: function(result) {
-                handlePaymentSuccess(result);
-            },
-            onPending: function(result) {
-                alert('Pembayaran pending, silakan selesaikan pembayaran');
+                snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        handlePaymentSuccess(result);
+                    },
+                    onPending: function(result) {
+                        alert('Pembayaran pending, silakan selesaikan pembayaran');
+                        resetButton();
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal');
+                        resetButton();
+                    },
+                    onClose: function() {
+                        resetButton();
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat memproses pembayaran');
                 resetButton();
-            },
-            onError: function(result) {
-                alert('Pembayaran gagal');
-                resetButton();
-            },
-            onClose: function() {
-                resetButton();
+            });
+
+            function resetButton() {
+                extendButton.disabled = false;
+                extendButton.innerHTML = '<i class="fas fa-credit-card me-2"></i>Perpanjang Membership';
             }
-        });
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat memproses pembayaran');
-        resetButton();
-    });
 
-    function resetButton() {
-        extendButton.disabled = false;
-        extendButton.innerHTML = '<i class="fas fa-credit-card me-2"></i>Perpanjang Membership';
-    }
-
-    function handlePaymentSuccess(result) {
-        fetch('{{ route("membership.payment.success") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify(result)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Pembayaran berhasil! Membership Anda telah diperpanjang. silahkan logout lalu login kembali');
-                window.location.reload();
-            } else {
-                alert(data.message || 'Terjadi kesalahan');
-                resetButton();
+            function handlePaymentSuccess(result) {
+                fetch('{{ route("membership.payment.success") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(result)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Pembayaran berhasil! Membership Anda telah diperpanjang. silahkan logout lalu login kembali');
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Terjadi kesalahan');
+                        resetButton();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memproses pembayaran');
+                    resetButton();
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat memproses pembayaran');
-            resetButton();
-        });
-    }
-};
-</script>
-    </body>
-    </html>
+        };
+    </script>
+</body>
+</html>
