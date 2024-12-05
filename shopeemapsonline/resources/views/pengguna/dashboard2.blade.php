@@ -148,10 +148,6 @@
                     <button type="button" id="installButton" class="btn">
                         <i class="fas fa-download me-2"></i>Install App
                     </button>
-                    <!-- New Map Button with named route -->
-                    <a href="{{ route('pengguna.dashboard2') }}" class="btn btn-light">
-                        <i class="fas fa-map me-2"></i>Lihat Map
-                    </a>
                     <button type="button" id="extend-button" class="btn btn-light">
                         <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
                     </button>
@@ -262,6 +258,7 @@
         let userLocationMarker = null;
         let userPulsingMarker = null;
         let proximityLines = [];
+        let isFirstLocation = true;
 
         // All previous functions remain exactly the same
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -460,11 +457,11 @@
                 zIndexOffset: 999
             }).addTo(readonlyMap);
 
-            // Always center map on user's location
-            readonlyMap.setView(userLatLng, readonlyMap.getZoom(), {
-                animate: true,
-                duration: 1
-            });
+            // Center map on first location update
+            if (isFirstLocation) {
+                readonlyMap.setView(userLatLng, 15);
+                isFirstLocation = false;
+            }
 
             updateProximityLines(lat, lng);
         }

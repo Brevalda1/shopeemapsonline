@@ -35,6 +35,11 @@ Route::get('/', function () {
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboardadmin', [App\Http\Controllers\DashboardController::class, 'adminDashboard'])->name('dashboardadmin');
 
+// Add new route for dashboard2
+Route::get('/pengguna/dashboard2', function () {
+    return view('pengguna.dashboard2');
+})->name('pengguna.dashboard2');
+
 Route::post('/pins', [App\Http\Controllers\PinController::class, 'store'])->name('pins.store');
 Route::delete('/pins/{id}', [App\Http\Controllers\PinController::class, 'destroy'])->name('pins.destroy');
 Route::put('/pins/{id}', [App\Http\Controllers\PinController::class, 'update'])->name('pins.update');
