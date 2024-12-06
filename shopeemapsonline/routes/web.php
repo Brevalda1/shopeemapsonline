@@ -32,6 +32,11 @@ use App\Http\Controllers\MembershipController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/contact', function () {
+    return view('contact');
+});
+
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 Route::get('/dashboardadmin', [App\Http\Controllers\DashboardController::class, 'adminDashboard'])->name('dashboardadmin');
 
