@@ -159,6 +159,9 @@
                         @csrf
                         <button type="submit" class="btn w-100" style="background-color: rgba(255,255,255,0.9); color: #EE4D2D;">Logout</button>
                     </form>
+                    <a href="/contact" class="btn btn-light" style="background-color: rgba(255,255,255,0.9); color: #EE4D2D;">
+                        <i class="fas fa-map me-2"></i>Terjadi Masalah? hubungi admin
+                    </a>
                 </div>
             </div>
         </div>

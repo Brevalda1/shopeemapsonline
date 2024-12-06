@@ -60,9 +60,15 @@
                                 </button>
                             </div>
 
-                            <div class="mb-0">
+                            <div class="mb-3">
                                 Sudah punya akun? 
                                 <a href="{{ route('login') }}">Login di sini</a>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="{{ url('/contact') }}" class="btn btn-outline-danger">
+                                    <i class="fas fa-headset me-2"></i>Terdapat masalah? Hubungi admin
+                                </a>
                             </div>
                         </form>
                     </div>
