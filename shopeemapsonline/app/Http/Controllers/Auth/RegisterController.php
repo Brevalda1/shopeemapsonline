@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pengguna;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -61,7 +62,7 @@ class RegisterController extends Controller
     // Callback untuk notifikasi dari Midtrans
     public function notificationHandler(Request $request)
     {
-        \Log::info('Midtrans Notification:', $request->all());
+        Log::info('Midtrans Notification:', $request->all());
 
         try {
             $notif = new \Midtrans\Notification();
@@ -70,7 +71,7 @@ class RegisterController extends Controller
             $fraud = $notif->fraud_status;
             $order_id = $notif->order_id;
 
-            \Log::info('Transaction Status:', [
+            Log::info('Transaction Status:', [
                 'status' => $transaction,
                 'fraud' => $fraud,
                 'order_id' => $order_id
@@ -91,7 +92,7 @@ class RegisterController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid transaction status']);
 
         } catch (\Exception $e) {
-            \Log::error('Notification Handler Error:', [
+            Log::error('Notification Handler Error:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -101,14 +102,14 @@ class RegisterController extends Controller
 
     public function handlePaymentSuccess(Request $request)
     {
-        \Log::info('Payment Success Handler:', $request->all());
+        Log::info('Payment Success Handler:', $request->all());
 
         try {
             // Ambil data registrasi dari session
             $pendingRegistration = session('pending_registration');
             
             if (!$pendingRegistration) {
-                \Log::error('Pending registration not found in session');
+                Log::error('Pending registration not found in session');
                 return response()->json(['success' => false, 'message' => 'Data registrasi tidak ditemukan']);
             }
 
@@ -132,7 +133,7 @@ class RegisterController extends Controller
                 'tanggal_exp' => $validated['tanggal_exp']
             ]);
 
-            \Log::info('User berhasil dibuat:', $user->toArray());
+            Log::info('User berhasil dibuat:', $user->toArray());
 
             // Hapus data pending dari session
             session()->forget('pending_registration');
@@ -140,7 +141,7 @@ class RegisterController extends Controller
             return response()->json(['success' => true, 'message' => 'Registrasi berhasil']);
 
         } catch (\Exception $e) {
-            \Log::error('Error saat menyimpan data pengguna:', [
+            Log::error('Error saat menyimpan data pengguna:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -162,7 +163,7 @@ class RegisterController extends Controller
             $orderId = 'REG-' . time();
             
             // Set jumlah pembayaran
-            $amount = 10000; // Rp 100.000
+            $amount = 10000; // Rp 10.000
 
             // Siapkan data transaksi
             $transactionDetails = [
@@ -177,7 +178,8 @@ class RegisterController extends Controller
 
             $transactionData = [
                 'transaction_details' => $transactionDetails,
-                'customer_details' => $customerDetails
+                'customer_details' => $customerDetails,
+                'merchant_id' => 'G676673022' // Added Merchant ID here
             ];
 
             // Dapatkan Snap Token
@@ -202,4 +204,4 @@ class RegisterController extends Controller
             ], 422);
         }
     }
-} 
+}
