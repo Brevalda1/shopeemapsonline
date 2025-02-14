@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Pengguna;
 
 class DashboardController extends Controller
 {
@@ -81,4 +83,30 @@ class DashboardController extends Controller
     }
     
     
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        // Get the current user's phone number from session
+        $noTelp = session('no_telp');
+        $user = Pengguna::where('no_telp', $noTelp)->first();
+
+        if (!$user) {
+            return back()->with('error', 'User tidak ditemukan.');
+        }
+
+        // Check if current password matches
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'Password lama tidak sesuai.');
+        }
+
+        // Update the password
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Password berhasil diubah.');
+    }
 }

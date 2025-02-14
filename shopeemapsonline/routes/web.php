@@ -102,3 +102,6 @@ Route::post('/membership/payment/success', [MembershipController::class, 'handle
     ->name('membership.payment.success');
 Route::post('/membership/payment/notification', [MembershipController::class, 'notificationHandler'])
     ->name('membership.payment.notification');
+
+// Change password route
+Route::post('/change-password', [DashboardController::class, 'changePassword'])->name('change.password');

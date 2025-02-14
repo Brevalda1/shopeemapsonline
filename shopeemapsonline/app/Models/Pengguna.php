@@ -10,6 +10,9 @@ class Pengguna extends Authenticatable
     use Notifiable;
 
     protected $table = 'pengguna';
+    protected $primaryKey = 'no_telp';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'nama',
