@@ -133,7 +133,7 @@
     <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
             <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
-                Shopee SPX Maps
+                SPX Maps
             </a>
             
             <!-- Hamburger Button -->
@@ -152,9 +152,9 @@
                     <a href="{{ route('pengguna.dashboard2') }}" class="btn btn-light">
                         <i class="fas fa-map me-2"></i>Lihat Map
                     </a>
-                    <button type="button" id="extend-button" class="btn btn-light">
+                    {{-- <button type="button" id="extend-button" class="btn btn-light">
                         <i class="fas fa-credit-card me-2"></i>Perpanjang Membership
-                    </button>
+                    </button> --}}
                     <form action="{{ route('logout') }}" method="POST" class="m-0">
                         @csrf
                         <button type="submit" class="btn w-100" style="background-color: rgba(255,255,255,0.9); color: #EE4D2D;">Logout</button>

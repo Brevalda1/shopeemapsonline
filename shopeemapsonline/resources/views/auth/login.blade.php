@@ -41,7 +41,7 @@
 
                         <div class="mb-3">
                             Belum punya akun? 
-                            <a href="{{ route('register') }}">Register di sini</a>
+                            <a href="{{ url('/contact') }}">Register di sini</a>
                         </div>
 
                         <div class="text-center mt-4">

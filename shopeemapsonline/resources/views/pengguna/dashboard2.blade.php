@@ -132,8 +132,8 @@
     <!-- Previous navbar and content structure remains exactly the same -->
     <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
-            <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
-                Shopee SPX Maps
+<a class="navbar-brand" href="/dashboard" style="color: white; font-weight: 600;">
+                SPX Maps
             </a>
             
             <!-- Hamburger Button -->

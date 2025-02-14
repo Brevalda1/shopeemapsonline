@@ -155,16 +155,28 @@
             color: white !important;
             text-decoration: none;
         }
+        
+        .navbar-brand-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Align items to the bottom */
+        }
+        
+        .navbar-brand-container .navbar-brand {
+            margin-bottom: 0; /* Remove any default margin */
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="fas fa-map-marked-alt me-2"></i>
-                SPX Maps
-            </a>
+             <div class="navbar-brand-container">
+                 <a class="navbar-brand d-flex align-items-center" href="#">
+                    <i class="fas fa-map-marked-alt me-2"></i>
+                        SPX Maps <span style="font-size: 0.60em; display: block;">by archenstein</span>
+                  </a>
+             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -182,9 +194,9 @@
                     <li class="nav-item ms-2">
                         <a class="btn btn-light" href="/login">Masuk</a>
                     </li>
-                    <li class="nav-item ms-2">
+                    {{-- <li class="nav-item ms-2">
                         <a class="btn btn-dark" href="/register">Daftar</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>
@@ -272,7 +284,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5><i class="fas fa-map-marked-alt me-2"></i>Shopee SPX Maps</h5>
+                    <h5><i class="fas fa-map-marked-alt me-2"></i>SPX Maps <span style="font-size: 0.60em;display: block;">by archenstein</span></h5>
                     <p>Platform pintar untuk driver Shopee Food dalam menemukan orderan SPX</p>
                 </div>
                 <div class="col-md-6 text-md-end">
@@ -287,7 +299,7 @@
             </div>
             <hr>
             <div class="text-center">
-                <small>&copy; 2024 SPX Maps. All rights reserved.</small>
+                <small>© 2024 SPX Maps. All rights reserved.</small>
             </div>
         </div>
     </footer>
