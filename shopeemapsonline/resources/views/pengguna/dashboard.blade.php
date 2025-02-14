@@ -117,13 +117,23 @@
             background-color: rgba(255,255,255,0.9);
         }
         
+        /* Navbar button styles */
+        .navbar .btn {
+            min-width: 160px;
+            text-align: center;
+            margin: 5px;
+            padding: 8px 16px;
+            white-space: nowrap;
+        }
+
         @media (max-width: 991px) {
             .navbar-collapse {
                 padding-bottom: 0.5rem;
             }
             
-            .btn {
+            .navbar .btn {
                 width: 100%;
+                min-width: unset;
             }
         }
     </style>
