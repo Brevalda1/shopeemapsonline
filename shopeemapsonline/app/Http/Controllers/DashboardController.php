@@ -93,7 +93,9 @@ class DashboardController extends Controller
         // Get the current user's phone number from session
         $noTelp = session('no_telp');
         $user = Pengguna::where('no_telp', $noTelp)->first();
-
+        // if ($request->fails()) {
+        //     return redirect()->back()->withErrors($request);
+        // }
         if (!$user) {
             return back()->with('error', 'User tidak ditemukan.');
         }
