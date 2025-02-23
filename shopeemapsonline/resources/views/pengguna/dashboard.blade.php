@@ -143,7 +143,7 @@
     <nav class="navbar navbar-expand-lg" style="background-color: #EE4D2D;">
         <div class="container">
             <a class="navbar-brand" href="#" style="color: white; font-weight: 600;">
-                SPX Maps
+                Petahub
             </a>
             
             <!-- Hamburger Button -->

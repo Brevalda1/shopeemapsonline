@@ -132,10 +132,10 @@
                     <i class="fab fa-whatsapp"></i>
                     Admin Bre
                 </a>
-                <a href="https://wa.me/62895623409631" class="btn btn-whatsapp animate-hover">
+                {{-- <a href="https://wa.me/62895623409631" class="btn btn-whatsapp animate-hover">
                     <i class="fab fa-whatsapp"></i>
                     Admin Ilham
-                </a>
+                </a> --}}
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPX Maps</title>
+    <title>Petahub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -174,7 +174,7 @@
              <div class="navbar-brand-container">
                  <a class="navbar-brand d-flex align-items-center" href="#">
                     <i class="fas fa-map-marked-alt me-2"></i>
-                        SPX Maps <span style="font-size: 0.60em; display: block;">by archenstein</span>
+                        Petahub <span style="font-size: 0.60em; display: block;"></span>
                   </a>
              </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -207,7 +207,7 @@
         <div class="container text-center">
             <h1 class="display-4 mb-4">Tingkatkan Penghasilan SPX Anda</h1>
             <p class="lead mb-4">Platform khusus untuk driver Shopee Food yang ingin mendapatkan orderan SPX dengan lebih mudah dan efisien</p>
-            <a href="/register" class="btn btn-primary btn-lg me-2 mb-2">Mulai Sekarang</a>
+            <a href="/login" class="btn btn-primary btn-lg me-2 mb-2">Mulai Sekarang</a>
             <a href="#fitur" class="btn btn-outline-light btn-lg mb-2">Pelajari Lebih Lanjut</a>
         </div>
     </section>
@@ -284,7 +284,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <h5><i class="fas fa-map-marked-alt me-2"></i>SPX Maps <span style="font-size: 0.60em;display: block;">by archenstein</span></h5>
+                    <h5><i class="fas fa-map-marked-alt me-2"></i>Petahub <span style="font-size: 0.60em;display: block;">by archenstein</span></h5>
                     <p>Platform pintar untuk driver Shopee Food dalam menemukan orderan SPX</p>
                 </div>
                 <div class="col-md-6 text-md-end">
@@ -299,7 +299,7 @@
             </div>
             <hr>
             <div class="text-center">
-                <small>© 2024 SPX Maps. All rights reserved.</small>
+                <small>© 2024 Petahub. All rights reserved.</small>
             </div>
         </div>
     </footer>
